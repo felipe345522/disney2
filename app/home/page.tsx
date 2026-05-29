@@ -1,65 +1,231 @@
+"use client";
+
 import { useEffect, useState } from "react";
 
 interface Character {
   _id: number;
   name: string;
   imageUrl: string;
+  films: string[];
+  tvShows: string[];
 }
 
 export default function HomePage() {
+
   const [characters, setCharacters] =
     useState<Character[]>([]);
 
+  const [loading, setLoading] =
+    useState(true);
+
+  // ---------------------------------
+  // CARGAR API
+  // ---------------------------------
+
+  const fetchCharacters = async () => {
+
+    try {
+
+      const response =
+        await fetch(
+          "https://api.disneyapi.dev/character"
+        );
+
+      const data =
+        await response.json();
+
+      setCharacters(data.data);
+
+    } catch (error) {
+
+      console.log(error);
+
+    } finally {
+
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    fetch(
-      "https://api.disneyapi.dev/character"
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setCharacters(data.data);
-      });
+
+    fetchCharacters();
+
   }, []);
 
-  return (
-    <div className="min-h-screen bg-[#0b0f1a] p-8">
-      <div className="flex justify-between items-center mb-10">
-        <h1 className="text-white text-5xl font-bold">
-          Disney
-        </h1>
+  // ---------------------------------
+  // CATEGORIAS
+  // ---------------------------------
 
-        <button className="bg-[#1f80ff] text-white px-5 py-2 rounded-lg">
-          Perfil
-        </button>
-      </div>
+  const disneyMovies =
+    characters.filter(
+      (character) =>
+        character.films?.length > 0
+    );
 
-      <h2 className="text-white text-2xl mb-6">
-        Personajes populares
+  const disneyShows =
+    characters.filter(
+      (character) =>
+        character.tvShows?.length > 0
+    );
+
+  const princess =
+    characters.filter(
+      (character) =>
+        character.name
+          .toLowerCase()
+          .includes("elsa") ||
+
+        character.name
+          .toLowerCase()
+          .includes("anna") ||
+
+        character.name
+          .toLowerCase()
+          .includes("moana") ||
+
+        character.name
+          .toLowerCase()
+          .includes("ariel") ||
+
+        character.name
+          .toLowerCase()
+          .includes("belle")
+    );
+
+  const classics =
+    characters.filter(
+      (character) =>
+        character.name
+          .toLowerCase()
+          .includes("mickey") ||
+
+        character.name
+          .toLowerCase()
+          .includes("donald") ||
+
+        character.name
+          .toLowerCase()
+          .includes("goofy")
+    );
+
+  // ---------------------------------
+  // COMPONENTE CATEGORIA
+  // ---------------------------------
+
+  const renderCategory = (
+    title: string,
+    list: Character[]
+  ) => (
+
+    <section className="section">
+
+      <h2 className="section-title">
+        {title}
       </h2>
 
-      <div className="grid grid-cols-5 gap-6">
-        {characters.map((char) => (
+      <div className="horizontal-scroll">
+
+        {list.slice(0, 12).map((character) => (
+
           <div
-            key={char._id}
-            className="bg-[#121826] rounded-2xl overflow-hidden hover:scale-105 transition"
+            key={character._id}
+            className="card"
           >
+
             <img
-              src={char.imageUrl}
-              alt={char.name}
-              className="w-full h-[320px] object-cover"
+              src={character.imageUrl}
+              alt={character.name}
             />
 
-            <div className="p-4">
-              <h2 className="text-white text-lg font-semibold">
-                {char.name}
-              </h2>
+            <div className="card-overlay">
 
-              <button className="bg-[#1f80ff] text-white w-full mt-4 p-2 rounded-lg">
-                Ver más
-              </button>
+              <h3 className="card-title">
+                {character.name}
+              </h3>
+
             </div>
+
           </div>
+
         ))}
+
       </div>
+
+    </section>
+  );
+
+  // ---------------------------------
+  // LOADING
+  // ---------------------------------
+
+  if (loading) {
+
+    return (
+
+      <div className="loading-screen">
+
+        <h1>
+          Disney+
+        </h1>
+
+      </div>
+    );
+  }
+
+  // ---------------------------------
+  // UI
+  // ---------------------------------
+
+  return (
+
+    <div className="page">
+
+      {/* HERO */}
+
+      <section
+        className="hero"
+        style={{
+          backgroundImage:
+            "url(https://wallpapers.com/images/featured/disney-plus-background-n0s2km84m4x9wola.jpg)"
+        }}
+      >
+
+        <div className="hero-content">
+
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg"
+            alt="Disney+"
+            className="hero-logo"
+          />
+
+          <button className="hero-button">
+            QUIERO DISNEY+
+          </button>
+
+        </div>
+
+      </section>
+
+      {renderCategory(
+        "Principales",
+        disneyMovies
+      )}
+
+      {renderCategory(
+        "Disney Channel",
+        disneyShows
+      )}
+
+      {renderCategory(
+        "Princesas",
+        princess
+      )}
+
+      {renderCategory(
+        "Clásicos Disney",
+        classics
+      )}
+
     </div>
   );
 }
