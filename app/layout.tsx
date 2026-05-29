@@ -2,15 +2,12 @@
 
 import "./globals.css";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
-
-  const pathname = usePathname();
+}) {
 
   return (
     <html lang="en">
@@ -18,62 +15,34 @@ export default function RootLayout({
 
         {/* NAVBAR */}
 
-        <nav className="w-full bg-[#121826] border-b border-[#1b2436] px-8 py-4 flex items-center justify-between">
-
-          {/* LOGO */}
+        <header className="navbar">
 
           <Link
             href="/home"
-            className="text-white text-3xl font-bold"
+            className="logo"
           >
             Disney+
           </Link>
 
-          {/* LINKS */}
+          <nav className="nav-links">
 
-          <div className="flex items-center gap-6">
-
-            <Link
-              href="/home"
-              className={`text-sm font-medium transition ${
-                pathname === "/home"
-                  ? "text-[#1f80ff]"
-                  : "text-white"
-              }`}
-            >
+            <Link href="/home">
               Inicio
             </Link>
 
-            <Link
-              href="/mvp"
-              className={`text-sm font-medium transition ${
-                pathname === "/mvp"
-                  ? "text-[#1f80ff]"
-                  : "text-white"
-              }`}
-            >
+            <Link href="/mvp">
               Favoritos
             </Link>
 
-            <Link
-              href="/user"
-              className={`text-sm font-medium transition ${
-                pathname === "/user"
-                  ? "text-[#1f80ff]"
-                  : "text-white"
-              }`}
-            >
+            <Link href="/user">
               Perfil
             </Link>
 
-          </div>
-        </nav>
+          </nav>
 
-        {/* CONTENIDO */}
+        </header>
 
-        <main>
-          {children}
-        </main>
+        {children}
 
       </body>
     </html>

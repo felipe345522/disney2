@@ -6,62 +6,115 @@ interface Character {
   _id: number;
   name: string;
   imageUrl: string;
+  films: string[];
 }
 
 export default function HomePage() {
+
   const [characters, setCharacters] =
     useState<Character[]>([]);
 
+  // ---------------------------
+  // CARGAR PERSONAJES
+  // ---------------------------
+
+  const fetchCharacters = async () => {
+
+    const response =
+      await fetch(
+        "https://api.disneyapi.dev/character"
+      );
+
+    const data =
+      await response.json();
+
+    setCharacters(data.data);
+  };
+
   useEffect(() => {
-    fetch(
-      "https://api.disneyapi.dev/character"
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setCharacters(data.data);
-      });
+
+    fetchCharacters();
+
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0b0f1a] p-8">
-      <div className="flex justify-between items-center mb-10">
-        <h1 className="text-white text-5xl font-bold">
-          Disney
-        </h1>
 
-        <button className="bg-[#1f80ff] text-white px-5 py-2 rounded-lg">
-          Perfil
-        </button>
-      </div>
+    <div className="page">
 
-      <h2 className="text-white text-2xl mb-6">
+      {/* HERO */}
+
+      <section
+        className="hero"
+        style={{
+          backgroundImage:
+            "url(https://images6.alphacoders.com/112/1122090.jpg)",
+        }}
+      >
+
+        <div className="hero-content">
+
+          <h1 className="hero-title">
+            Disney+
+          </h1>
+
+          <p className="hero-description">
+            Explora personajes icónicos
+            de Disney, Pixar, Marvel
+            y más en una experiencia
+            inspirada en Disney Plus.
+          </p>
+
+        </div>
+
+      </section>
+
+      {/* TITULO */}
+
+      <h2 className="section-title">
         Personajes populares
       </h2>
 
-      <div className="grid grid-cols-5 gap-6">
-        {characters.map((char) => (
+      {/* GRID */}
+
+      <div className="card-grid">
+
+        {characters.map((character) => (
+
           <div
-            key={char._id}
-            className="bg-[#121826] rounded-2xl overflow-hidden hover:scale-105 transition"
+            key={character._id}
+            className="card"
           >
+
             <img
-              src={char.imageUrl}
-              alt={char.name}
-              className="w-full h-[320px] object-cover"
+              src={character.imageUrl}
+              alt={character.name}
             />
 
-            <div className="p-4">
-              <h2 className="text-white text-lg font-semibold">
-                {char.name}
-              </h2>
+            <div className="card-content">
 
-              <button className="bg-[#1f80ff] text-white w-full mt-4 p-2 rounded-lg">
+              <h3 className="card-title">
+                {character.name}
+              </h3>
+
+              <p className="card-subtitle">
+
+                {character.films?.[0]
+                  || "Disney Character"}
+
+              </p>
+
+              <button className="primary-button">
                 Ver más
               </button>
+
             </div>
+
           </div>
+
         ))}
+
       </div>
+
     </div>
   );
 }
